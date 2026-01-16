@@ -4,17 +4,6 @@ CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$CURRENT_DIR/../lib/coreutils-compat.sh"
 source "$CURRENT_DIR/themes.sh"
 
-# Define icons using unicode escape codes
-ICON_BRANCH=$'\ue0a0'
-ICON_MODIFIED=$'\uf040'
-ICON_ADDED=$'\uf055'
-ICON_REMOVED=$'\uf056'
-ICON_UNTRACKED=$'\uf128'
-ICON_SYNCED=$'\uf00c'
-ICON_DIRTY=$'\uf071'
-ICON_PUSH=$'\uf0ee'
-ICON_PULL=$'\uf0ed'
-
 cd "$1" || exit 1
 RESET="#[fg=${THEME[foreground]},bg=${THEME[background]},nobold,noitalics,nounderscore,nodim]"
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
@@ -44,33 +33,33 @@ fi
 UNTRACKED_COUNT="$(git ls-files --other --directory --exclude-standard | wc -l | bc)"
 
 if [[ $CHANGED_COUNT -gt 0 ]]; then
-  STATUS_CHANGED="${RESET}#[fg=${THEME[yellow]},bg=${THEME[background]},bold] ${ICON_MODIFIED} ${CHANGED_COUNT} "
+  STATUS_CHANGED="${RESET}#[fg=${THEME[yellow]},bg=${THEME[background]},bold] ${CHANGED_COUNT} "
 fi
 
 if [[ $INSERTIONS_COUNT -gt 0 ]]; then
-  STATUS_INSERTIONS="${RESET}#[fg=${THEME[green]},bg=${THEME[background]},bold] ${ICON_ADDED} ${INSERTIONS_COUNT} "
+  STATUS_INSERTIONS="${RESET}#[fg=${THEME[green]},bg=${THEME[background]},bold] ${INSERTIONS_COUNT} "
 fi
 
 if [[ $DELETIONS_COUNT -gt 0 ]]; then
-  STATUS_DELETIONS="${RESET}#[fg=${THEME[red]},bg=${THEME[background]},bold] ${ICON_REMOVED} ${DELETIONS_COUNT} "
+  STATUS_DELETIONS="${RESET}#[fg=${THEME[red]},bg=${THEME[background]},bold] ${DELETIONS_COUNT} "
 fi
 
 if [[ $UNTRACKED_COUNT -gt 0 ]]; then
-  STATUS_UNTRACKED="${RESET}#[fg=${THEME[foreground]},bg=${THEME[background]},bold] ${ICON_UNTRACKED} ${UNTRACKED_COUNT} "
+  STATUS_UNTRACKED="${RESET}#[fg=${THEME[foreground]},bg=${THEME[background]},bold] ${UNTRACKED_COUNT} "
 fi
 
 # Determine repository sync status
 if [[ $SYNC_MODE -eq 0 ]]; then
-  NEED_PUSH=$(git log @{push}.. 2>/dev/null | wc -l | bc)
+  NEED_PUSH=$(git log @{push}.. | wc -l | bc)
   if [[ $NEED_PUSH -gt 0 ]]; then
     SYNC_MODE=2
   else
-    LAST_FETCH=$(stat -c %Y .git/FETCH_HEAD 2>/dev/null | bc)
+    LAST_FETCH=$(stat -c %Y .git/FETCH_HEAD | bc)
     NOW=$(date +%s | bc)
 
     # if 5 minutes have passed since the last fetch
-    if [[ -n "$LAST_FETCH" ]] && [[ $((NOW - LAST_FETCH)) -gt 300 ]]; then
-      git fetch --atomic origin --negotiation-tip=HEAD 2>/dev/null
+    if [[ $((NOW - LAST_FETCH)) -gt 300 ]]; then
+      git fetch --atomic origin --negotiation-tip=HEAD
     fi
 
     # Check if the remote branch is ahead of the local branch
@@ -84,19 +73,19 @@ fi
 # Set the status indicator based on the sync mode
 case "$SYNC_MODE" in
 1)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[bred]},bold] ${ICON_DIRTY}"
+  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[bred]},bold]▒ 󱓎"
   ;;
 2)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[yellow]},bold] ${ICON_PUSH}"
+  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[red]},bold]▒ 󰛃"
   ;;
 3)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[magenta]},bold] ${ICON_PULL}"
+  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[magenta]},bold]▒ 󰛀"
   ;;
 *)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[green]},bold] ${ICON_SYNCED}"
+  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[green]},bold]▒ "
   ;;
 esac
 
 if [[ -n $BRANCH ]]; then
-  echo "$REMOTE_STATUS #[fg=${THEME[blue]}]${ICON_BRANCH} ${RESET}${BRANCH}${STATUS_CHANGED}${STATUS_INSERTIONS}${STATUS_DELETIONS}${STATUS_UNTRACKED}"
+  echo "$REMOTE_STATUS $RESET$BRANCH $STATUS_CHANGED$STATUS_INSERTIONS$STATUS_DELETIONS$STATUS_UNTRACKED"
 fi
