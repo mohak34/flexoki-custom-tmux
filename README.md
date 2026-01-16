@@ -6,7 +6,8 @@ Forked from [yukinord-tmux](https://github.com/adibhanna/yukinord-tmux) which is
 
 ## Screenshot
 
-![flexoki_dark-tmux](./img/screenshot.png)
+<img width="2560" height="48" alt="image" src="https://github.com/user-attachments/assets/99b5bbd8-13e3-485a-a815-025e44e4d2e4" />
+
 
 ## Installation
 
