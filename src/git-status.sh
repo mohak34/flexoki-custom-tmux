@@ -4,6 +4,17 @@ CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$CURRENT_DIR/../lib/coreutils-compat.sh"
 source "$CURRENT_DIR/themes.sh"
 
+# Define icons using unicode escape codes
+ICON_BRANCH=$'\ue0a0'
+ICON_MODIFIED=$'\uf040'
+ICON_ADDED=$'\uf055'
+ICON_REMOVED=$'\uf056'
+ICON_UNTRACKED=$'\uf128'
+ICON_SYNCED=$'\uf00c'
+ICON_DIRTY=$'\uf071'
+ICON_PUSH=$'\uf0ee'
+ICON_PULL=$'\uf0ed'
+
 cd "$1" || exit 1
 RESET="#[fg=${THEME[foreground]},bg=${THEME[background]},nobold,noitalics,nounderscore,nodim]"
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
@@ -33,19 +44,19 @@ fi
 UNTRACKED_COUNT="$(git ls-files --other --directory --exclude-standard | wc -l | bc)"
 
 if [[ $CHANGED_COUNT -gt 0 ]]; then
-  STATUS_CHANGED="${RESET}#[fg=${THEME[yellow]},bg=${THEME[background]},bold] ${CHANGED_COUNT} "
+  STATUS_CHANGED="${RESET}#[fg=${THEME[yellow]},bg=${THEME[background]},bold] ${ICON_MODIFIED} ${CHANGED_COUNT} "
 fi
 
 if [[ $INSERTIONS_COUNT -gt 0 ]]; then
-  STATUS_INSERTIONS="${RESET}#[fg=${THEME[green]},bg=${THEME[background]},bold] ${INSERTIONS_COUNT} "
+  STATUS_INSERTIONS="${RESET}#[fg=${THEME[green]},bg=${THEME[background]},bold] ${ICON_ADDED} ${INSERTIONS_COUNT} "
 fi
 
 if [[ $DELETIONS_COUNT -gt 0 ]]; then
-  STATUS_DELETIONS="${RESET}#[fg=${THEME[red]},bg=${THEME[background]},bold] ${DELETIONS_COUNT} "
+  STATUS_DELETIONS="${RESET}#[fg=${THEME[red]},bg=${THEME[background]},bold] ${ICON_REMOVED} ${DELETIONS_COUNT} "
 fi
 
 if [[ $UNTRACKED_COUNT -gt 0 ]]; then
-  STATUS_UNTRACKED="${RESET}#[fg=${THEME[foreground]},bg=${THEME[background]},bold] ${UNTRACKED_COUNT} "
+  STATUS_UNTRACKED="${RESET}#[fg=${THEME[foreground]},bg=${THEME[background]},bold] ${ICON_UNTRACKED} ${UNTRACKED_COUNT} "
 fi
 
 # Determine repository sync status
@@ -73,19 +84,19 @@ fi
 # Set the status indicator based on the sync mode
 case "$SYNC_MODE" in
 1)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[bred]},bold]▒ 󱓎"
+  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[bred]},bold] ${ICON_DIRTY}"
   ;;
 2)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[red]},bold]▒ 󰛃"
+  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[yellow]},bold] ${ICON_PUSH}"
   ;;
 3)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[magenta]},bold]▒ 󰛀"
+  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[magenta]},bold] ${ICON_PULL}"
   ;;
 *)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[green]},bold]▒ "
+  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[green]},bold] ${ICON_SYNCED}"
   ;;
 esac
 
 if [[ -n $BRANCH ]]; then
-  echo "$REMOTE_STATUS $RESET$BRANCH $STATUS_CHANGED$STATUS_INSERTIONS$STATUS_DELETIONS$STATUS_UNTRACKED"
+  echo "$REMOTE_STATUS #[fg=${THEME[blue]}]${ICON_BRANCH} ${RESET}${BRANCH}${STATUS_CHANGED}${STATUS_INSERTIONS}${STATUS_DELETIONS}${STATUS_UNTRACKED}"
 fi
