@@ -33,19 +33,19 @@ fi
 UNTRACKED_COUNT="$(git ls-files --other --directory --exclude-standard | wc -l | bc)"
 
 if [[ $CHANGED_COUNT -gt 0 ]]; then
-  STATUS_CHANGED="${RESET}#[fg=${THEME[yellow]},bg=${THEME[background]},bold] ${CHANGED_COUNT} "
+  STATUS_CHANGED="#[fg=${THEME[yellow]}] ~${CHANGED_COUNT}"
 fi
 
 if [[ $INSERTIONS_COUNT -gt 0 ]]; then
-  STATUS_INSERTIONS="${RESET}#[fg=${THEME[green]},bg=${THEME[background]},bold] ${INSERTIONS_COUNT} "
+  STATUS_INSERTIONS="#[fg=${THEME[green]}] +${INSERTIONS_COUNT}"
 fi
 
 if [[ $DELETIONS_COUNT -gt 0 ]]; then
-  STATUS_DELETIONS="${RESET}#[fg=${THEME[red]},bg=${THEME[background]},bold] ${DELETIONS_COUNT} "
+  STATUS_DELETIONS="#[fg=${THEME[red]}] -${DELETIONS_COUNT}"
 fi
 
 if [[ $UNTRACKED_COUNT -gt 0 ]]; then
-  STATUS_UNTRACKED="${RESET}#[fg=${THEME[foreground]},bg=${THEME[background]},bold] ${UNTRACKED_COUNT} "
+  STATUS_UNTRACKED="#[fg=${THEME[cyan]}] ?${UNTRACKED_COUNT}"
 fi
 
 # Determine repository sync status
@@ -57,12 +57,10 @@ if [[ $SYNC_MODE -eq 0 ]]; then
     LAST_FETCH=$(stat -c %Y .git/FETCH_HEAD 2>/dev/null | bc)
     NOW=$(date +%s | bc)
 
-    # if 5 minutes have passed since the last fetch
     if [[ -n "$LAST_FETCH" ]] && [[ $((NOW - LAST_FETCH)) -gt 300 ]]; then
       git fetch --atomic origin --negotiation-tip=HEAD 2>/dev/null
     fi
 
-    # Check if the remote branch is ahead of the local branch
     REMOTE_DIFF="$(git diff --numstat "${BRANCH}" "origin/${BRANCH}" 2>/dev/null)"
     if [[ -n $REMOTE_DIFF ]]; then
       SYNC_MODE=3
@@ -73,19 +71,23 @@ fi
 # Set the status indicator based on the sync mode
 case "$SYNC_MODE" in
 1)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[bred]},bold]▒ 󱓎"
+  # Local changes (dirty)
+  SYNC_ICON="#[fg=${THEME[red]}]●"
   ;;
 2)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[red]},bold]▒ 󰛃"
+  # Need to push
+  SYNC_ICON="#[fg=${THEME[yellow]}]↑"
   ;;
 3)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[magenta]},bold]▒ 󰛀"
+  # Need to pull
+  SYNC_ICON="#[fg=${THEME[magenta]}]↓"
   ;;
 *)
-  REMOTE_STATUS="$RESET#[bg=${THEME[background]},fg=${THEME[green]},bold]▒ "
+  # Clean/synced
+  SYNC_ICON="#[fg=${THEME[green]}]✓"
   ;;
 esac
 
 if [[ -n $BRANCH ]]; then
-  echo "$REMOTE_STATUS $RESET$BRANCH $STATUS_CHANGED$STATUS_INSERTIONS$STATUS_DELETIONS$STATUS_UNTRACKED"
+  echo "${RESET}${SYNC_ICON} #[fg=${THEME[blue]}] ${RESET}${BRANCH}${STATUS_CHANGED}${STATUS_INSERTIONS}${STATUS_DELETIONS}${STATUS_UNTRACKED} "
 fi
