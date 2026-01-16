@@ -6,8 +6,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.."
 . "${ROOT_DIR}/src/themes.sh"
 
 # get value from tmux config
-SHOW_PATH=$(tmux show-option -gv @flexoki_dark-tmux_show_path 2>/dev/null)
-PATH_FORMAT=$(tmux show-option -gv @flexoki_dark-tmux_path_format 2>/dev/null) # full | relative
+SHOW_PATH=$(tmux show-option -gv @flexoki-custom-tmux_show_path 2>/dev/null)
+PATH_FORMAT=$(tmux show-option -gv @flexoki-custom-tmux_path_format 2>/dev/null) # full | relative
 RESET="#[fg=${THEME[foreground]},bg=${THEME[background]},nobold,noitalics,nounderscore,nodim]"
 
 # check if not enabled

@@ -9,7 +9,7 @@ cd "$1" || exit 1
 RESET="#[fg=${THEME[foreground]},bg=${THEME[background]},nobold,noitalics,nounderscore,nodim]"
 
 # Cache settings
-CACHE_DIR="${HOME}/.cache/flexoki_dark-tmux"
+CACHE_DIR="${HOME}/.cache/flexoki-custom-tmux"
 CACHE_DURATION=300 # 5 minutes in seconds
 
 # Check if we're in a git repository
