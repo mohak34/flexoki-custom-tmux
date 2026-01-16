@@ -1,8 +1,8 @@
-# flexoki_dark-tmux
+# flexoki-custom-tmux
 
 A custom tmux theme based on [yukinord-tmux](https://github.com/adibhanna/yukinord-tmux) which is a fork of [tokyo-night-tmux](https://github.com/janoamaral/tokyo-night-tmux) - all credit goes to the authors.
 
-Updated colors to match the [Flexoki Dark](https://stephango.com/flexoki) theme in [Ghostty](https://ghostty.org/).
+Updated colors to match my custom Flexoki Ghostty theme.
 
 ## Screenshot
 
@@ -12,10 +12,10 @@ Updated colors to match the [Flexoki Dark](https://stephango.com/flexoki) theme 
 
 ```bash
 # Add to your tmux.conf
-set -g @plugin "mohak34/flexoki_dark-tmux"
+set -g @plugin "mohak34/flexoki-custom-tmux"
 
 # Or for local installation
-run-shell ~/path/to/flexoki_dark-tmux/flexoki_dark.tmux
+run-shell ~/path/to/flexoki-custom-tmux/flexoki-custom.tmux
 ```
 
 ## Colors
